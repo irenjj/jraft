@@ -15,6 +15,7 @@
 // limitations under the License.
 #pragma once
 
+#include <mutex>
 #include <utility>
 
 #include "storage.h"
@@ -40,17 +41,29 @@ class MemoryStorage : public Storage {
   ErrNum Compact(uint64_t compact_index) override;
   ErrNum Append(const std::vector<EntryPtr>& entries) override;
 
-  const HardState& hard_state() const { return hard_state_; }
-  void set_hard_state(const HardState& hard_state) { hard_state_ = hard_state; }
+  void set_hard_state(const HardState& hard_state) {
+    std::lock_guard<std::mutex> lock_guard(mutex_);
+    hard_state_ = hard_state;
+  }
 
-  const Snapshot& snapshot() const { return *snapshot_; }
+  const Snapshot& snapshot() {
+    std::lock_guard<std::mutex> lock_guard(mutex_);
+    return *snapshot_;
+  }
   SnapshotPtr mutable_snapshot() { return snapshot_; }
-  void set_snapshot(const SnapshotPtr& snapshot) { snapshot_ = snapshot; }
 
-  const std::vector<EntryPtr>& entries() const { return entries_; }
-  const Entry& entries(size_t i) const { return *(entries_[i]); }
-  std::vector<EntryPtr>& mutable_entries() { return entries_; }
-  void set_entries(const std::vector<EntryPtr>& entries) { entries_ = entries; }
+  const std::vector<EntryPtr>& entries() {
+    std::lock_guard<std::mutex> lock_guard(mutex_);
+    return entries_;
+  }
+  const Entry& entries(size_t i) {
+    std::lock_guard<std::mutex> lock_guard(mutex_);
+    return *(entries_[i]);
+  }
+  void set_entries(const std::vector<EntryPtr>& entries) {
+    std::lock_guard<std::mutex> lock_guard(mutex_);
+    entries_ = entries;
+  }
 
  private:
   uint64_t FirstIndex() const { return entries_[0]->index() + 1; }
@@ -63,6 +76,7 @@ class MemoryStorage : public Storage {
   // First Entry is <0, 0> when start up or latest snapshot's <index, term>.
   // So entries_[i] has raft log position i + snapshot_->metadata().index().
   std::vector<EntryPtr> entries_;
+  std::mutex mutex_;
 };
 
 using MemoryStoragePtr = std::shared_ptr<MemoryStorage>;

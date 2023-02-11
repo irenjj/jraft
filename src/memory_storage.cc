@@ -39,6 +39,8 @@ ErrNum MemoryStorage::InitialState(HardState* hs, ConfState* cs) {
 
 ErrNum MemoryStorage::Entries(uint64_t lo, uint64_t hi, uint64_t max_size,
                               std::vector<EntryPtr>* entries) {
+  std::lock_guard<std::mutex> lock_guard(mutex_);
+
   assert(entries->empty());
 
   uint64_t offset = entries_[0]->index();
@@ -64,6 +66,8 @@ ErrNum MemoryStorage::Entries(uint64_t lo, uint64_t hi, uint64_t max_size,
 }
 
 ErrNum MemoryStorage::Term(uint64_t i, uint64_t* term) {
+  std::lock_guard<std::mutex> lock_guard(mutex_);
+
   *term = 0;
 
   uint64_t offset = entries_[0]->index();
@@ -80,16 +84,22 @@ ErrNum MemoryStorage::Term(uint64_t i, uint64_t* term) {
 }
 
 ErrNum MemoryStorage::FirstIndex(uint64_t* index) {
+  std::lock_guard<std::mutex> lock_guard(mutex_);
+
   *index = FirstIndex();
   return kOk;
 }
 
 ErrNum MemoryStorage::LastIndex(uint64_t* index) {
+  std::lock_guard<std::mutex> lock_guard(mutex_);
+
   *index = LastIndex();
   return kOk;
 }
 
 ErrNum MemoryStorage::GetSnapshot(SnapshotPtr& snapshot) {
+  std::lock_guard<std::mutex> lock_guard(mutex_);
+
   snapshot = snapshot_;
   return kOk;
 }
@@ -101,6 +111,8 @@ ErrNum MemoryStorage::GetSnapshot(SnapshotPtr& snapshot) {
 ErrNum MemoryStorage::CreateSnapshot(uint64_t i, ConfState* cs,
                                      const std::string& data,
                                      SnapshotPtr* snap) {
+  std::lock_guard<std::mutex> lock_guard(mutex_);
+
   if (i <= snapshot_->metadata().index()) {
     return kErrSnapOutOfData;
   }
@@ -128,6 +140,8 @@ ErrNum MemoryStorage::CreateSnapshot(uint64_t i, ConfState* cs,
 // Overwrites the content of Storage object with the given snapshot. If the
 // snapshot is stale, ignore it.
 ErrNum MemoryStorage::ApplySnapshot(const SnapshotPtr& snapshot) {
+  std::lock_guard<std::mutex> lock_guard(mutex_);
+
   // handle check for old snapshot being applied
   uint64_t ms_index = snapshot_->metadata().index();
   uint64_t snap_index = snapshot->metadata().index();
@@ -145,6 +159,8 @@ ErrNum MemoryStorage::ApplySnapshot(const SnapshotPtr& snapshot) {
 // Discards all log entries prior to compact_index. It is the application's
 // responsibility to not attempt to compact an index greater than applied_.
 ErrNum MemoryStorage::Compact(uint64_t compact_index) {
+  std::lock_guard<std::mutex> lock_guard(mutex_);
+
   uint64_t offset = entries_[0]->index();
   if (compact_index <= offset) {
     return kErrCompacted;
@@ -167,6 +183,8 @@ ErrNum MemoryStorage::Append(const std::vector<EntryPtr>& entries) {
   if (entries.empty()) {
     return kOk;
   }
+
+  std::lock_guard<std::mutex> lock_guard(mutex_);
 
   uint64_t memory_first = FirstIndex();
   uint64_t app_last = entries[0]->index() + entries.size() - 1;
