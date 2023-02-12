@@ -389,15 +389,7 @@ void Raft::Advance(const ReadyPtr& rd) {
 // MaybeCommit attempts to advance the commit index. Returns true if the commit
 // index changed (in which case the caller should call BcastAppend).
 bool Raft::MaybeCommit() {
-  auto tracker_map = tracker_->progress_map();
-  std::vector<uint64_t> mis(tracker_map.size());
-  int i = 0;
-  for (auto& iter : tracker_map) {
-    mis[i++] = iter.second->match();
-  }
-  std::sort(mis.begin(), mis.end());
-  auto mci = mis[mis.size() - Quorum()];
-
+  auto mci = tracker_->MaybeCommit();
   return raft_log_->MaybeCommit(mci, term_);
 }
 
@@ -602,7 +594,7 @@ void Raft::Campaign(CampaignType t) {
   auto prs_map = tracker_->progress_map();
   for (auto& iter : prs_map) {
     uint64_t id = iter.first;
-    if (id == id_) {
+    if (id == id_ || iter.second->is_learner()) {
       continue;
     }
 

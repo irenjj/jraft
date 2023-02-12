@@ -37,6 +37,7 @@ ErrNum MemoryStorage::InitialState(HardState* hs, ConfState* cs) {
   return kOk;
 }
 
+// Get entries [lo, hi) from entries_.
 ErrNum MemoryStorage::Entries(uint64_t lo, uint64_t hi, uint64_t max_size,
                               std::vector<EntryPtr>* entries) {
   std::lock_guard<std::mutex> lock_guard(mutex_);
@@ -110,7 +111,7 @@ ErrNum MemoryStorage::GetSnapshot(SnapshotPtr& snapshot) {
 // ApplyConfChange() must be passed in.
 ErrNum MemoryStorage::CreateSnapshot(uint64_t i, ConfState* cs,
                                      const std::string& data,
-                                     SnapshotPtr* snap) {
+                                     SnapshotPtr* snapshot) {
   std::lock_guard<std::mutex> lock_guard(mutex_);
 
   if (i <= snapshot_->metadata().index()) {
@@ -130,8 +131,8 @@ ErrNum MemoryStorage::CreateSnapshot(uint64_t i, ConfState* cs,
     *(meta->mutable_conf_state()) = *cs;
   }
   snapshot_->set_data(data);
-  if (snap != nullptr) {
-    *snap = snapshot_;
+  if (snapshot != nullptr) {
+    *snapshot = snapshot_;
   }
 
   return kOk;

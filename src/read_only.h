@@ -52,28 +52,14 @@ class ReadOnly : public Noncopyable {
   void Reset(ReadOnlyOption option);
 
   const ReadOnlyOption& option() const { return option_; }
-  ReadOnlyOption& mutable_option() { return option_; }
-  void set_option(const ReadOnlyOption& option) { option_ = option; }
-
   const std::map<std::string, ReadIndexStatusPtr>& pending_read_index() const {
     return pending_read_index_;
   }
   std::map<std::string, ReadIndexStatusPtr>& mutable_pending_read_index() {
     return pending_read_index_;
   }
-  void set_pending_read_index(
-      const std::map<std::string, ReadIndexStatusPtr>& p) {
-    pending_read_index_ = p;
-  }
-
   const std::vector<std::string>& read_index_queue() const {
     return read_index_queue_;
-  }
-  std::vector<std::string>& mutable_read_index_queue() {
-    return read_index_queue_;
-  }
-  void set_read_index_queue(const std::vector<std::string>& r) {
-    read_index_queue_ = r;
   }
 
  private:

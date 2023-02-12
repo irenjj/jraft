@@ -25,6 +25,7 @@ namespace jraft {
 class MemoryStorage : public Storage {
  public:
   MemoryStorage();
+  ~MemoryStorage() override = default;
 
   ErrNum InitialState(HardState* hs, ConfState* cs) override;
   ErrNum Entries(uint64_t lo, uint64_t hi, uint64_t max_size,
@@ -35,7 +36,7 @@ class MemoryStorage : public Storage {
 
   ErrNum GetSnapshot(SnapshotPtr& snapshot) override;
   ErrNum CreateSnapshot(uint64_t i, ConfState* cs, const std::string& data,
-                        SnapshotPtr* snap) override;
+                        SnapshotPtr* snapshot) override;
   ErrNum ApplySnapshot(const SnapshotPtr& snapshot) override;
 
   ErrNum Compact(uint64_t compact_index) override;
@@ -75,6 +76,7 @@ class MemoryStorage : public Storage {
   SnapshotPtr snapshot_;
   // First Entry is <0, 0> when start up or latest snapshot's <index, term>.
   // So entries_[i] has raft log position i + snapshot_->metadata().index().
+  // entries_[0] is a dummy entry.
   std::vector<EntryPtr> entries_;
   std::mutex mutex_;
 };

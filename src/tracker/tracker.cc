@@ -162,4 +162,17 @@ void ProgressTracker::DelProgress(uint64_t id) {
   }
 }
 
+uint64_t ProgressTracker::MaybeCommit() const {
+  std::vector<uint64_t> mis;
+  for (const auto& iter : progress_map_) {
+    if (!iter.second->is_learner()) {
+      mis.push_back(iter.second->match());
+    }
+  }
+
+  std::sort(mis.begin(), mis.end());
+
+  return mis[mis.size() - (mis.size() / 2 + 1)];
+}
+
 }  // namespace jraft

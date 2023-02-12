@@ -74,12 +74,8 @@ class RaftLog {
   void set_committed(uint64_t committed) { committed_ = committed; }
 
   uint64_t applied() const { return applied_; }
-  void set_applied(uint64_t applied) { applied_ = applied; }
 
   uint64_t max_next_ents_size() const { return max_next_ents_size_; }
-  void set_max_next_ents_size(uint64_t max_next_ents_size) {
-    max_next_ents_size_ = max_next_ents_size;
-  }
 
  private:
   // storage_ contains all stable entries since the last snapshot.

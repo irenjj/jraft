@@ -45,10 +45,8 @@ class LogUnstable : public Noncopyable {
   // helper functions to get/set member variables.
   SnapshotPtr snapshot() const { return snapshot_; }
   SnapshotPtr mutable_snapshot() { return snapshot_; }
-  void set_snapshot(SnapshotPtr snapshot) { snapshot_ = std::move(snapshot); }
 
   const std::vector<EntryPtr>& entries() const { return entries_; }
-  void set_entries(const std::vector<EntryPtr>& entries) { entries_ = entries; }
 
   uint64_t offset() const { return offset_; }
   void set_offset(uint64_t offset) { offset_ = offset; }

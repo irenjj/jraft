@@ -50,16 +50,9 @@ class ProgressTracker {
   void SetProgress(uint64_t id, uint64_t match, uint64_t next, bool is_learner);
   void DelProgress(uint64_t id);
 
+  uint64_t MaybeCommit() const;
+
   size_t max_inflight_size() const { return max_inflight_size_; }
-  void set_max_inflight_size(size_t max_inflight_size) {
-    max_inflight_size_ = max_inflight_size;
-  }
-
-  uint64_t max_inflight_bytes() const { return max_inflight_bytes_; }
-  void set_max_inflight_bytes(uint64_t max_inflight_bytes) {
-    max_inflight_bytes_ = max_inflight_bytes;
-  }
-
   ProgressPtr mutable_progress(uint64_t id) {
     auto iter = progress_map_.find(id);
     if (iter == progress_map_.end()) {

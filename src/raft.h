@@ -410,7 +410,7 @@ class Raft : public Noncopyable {
   // randomized_election_timeout_ is a random number between
   // [election_timeout_, 2 * election_timeout_ - 1]. It gets reset when raft
   // changes its state to follower or candidate.
-  int randomized_election_timeout_{};
+  int randomized_election_timeout_ = 0;
   bool disable_proposal_forwarding_;
 
   // pending_read_index_messages_ is used to store messages of type
