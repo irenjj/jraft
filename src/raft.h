@@ -125,6 +125,8 @@ struct Config {
   bool disable_proposal_forwarding = false;
 };
 
+void Validate(Config* c);
+
 class SoftState;
 class ProgressTracker;
 class Message;
