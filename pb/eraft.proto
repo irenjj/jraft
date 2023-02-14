@@ -1,60 +1,60 @@
-syntax = "proto2";
+syntax = "proto3";
 package jraft;
 
 enum EntryType {
-  kEntryNormal      = 0;
-  kEntryConfChange  = 1;
+  kEntryNormal = 0;
+  kEntryConfChange = 1;
 }
 
 message Entry {
   // must be 64-bit aligned for atomic operations
-  required uint64     term  = 2;
+  uint64 term  = 2;
   // must be 64-bit aligned for atomic operations
-  required uint64     index = 3;
-  required EntryType  type  = 1;
-  required bytes      data  = 4;
+  uint64 index = 3;
+  EntryType type  = 1;
+  bytes data  = 4;
 }
 
 message SnapshotMetadata {
-  optional ConfState  conf_state  = 1;
-  optional uint64     index       = 2;
-  optional uint64     term        = 3;
+  ConfState conf_state = 1;
+  uint64 index = 2;
+  uint64 term = 3;
 }
 
 message Snapshot {
-  optional bytes            data      = 1;
-  optional SnapshotMetadata metadata  = 2;
+  bytes data = 1;
+  SnapshotMetadata metadata = 2;
 }
 
 // For description of different message types, see:
 // https://pkg.go.dev/go.etcd.io/raft/v3#hdr-MessageType
 enum MessageType {
-  kMsgHup             = 0;
-  kMsgBeat            = 1;
-  kMsgProp            = 2;
-  kMsgApp             = 3;
-  kMsgAppResp         = 4;
-  kMsgVote            = 5;
-  kMsgVoteResp        = 6;
-  kMsgSnap            = 7;
-  kMsgHeartbeat       = 8;
-  kMsgHeartbeatResp   = 9;
-  kMsgUnreachable     = 10;
-  kMsgSnapStatus      = 11;
-  kMsgCheckQuorum     = 12;
-  kMsgTransferLeader  = 13;
-  kMsgTimeoutNow      = 14;
-  kMsgReadIndex       = 15;
-  kMsgReadIndexResp   = 16;
-  kMsgPreVote         = 17;
-  kMsgPreVoteResp     = 18;
+  kMsgHup = 0;
+  kMsgBeat = 1;
+  kMsgProp = 2;
+  kMsgApp = 3;
+  kMsgAppResp = 4;
+  kMsgVote = 5;
+  kMsgVoteResp = 6;
+  kMsgSnap = 7;
+  kMsgHeartbeat = 8;
+  kMsgHeartbeatResp = 9;
+  kMsgUnreachable = 10;
+  kMsgSnapStatus = 11;
+  kMsgCheckQuorum = 12;
+  kMsgTransferLeader = 13;
+  kMsgTimeoutNow = 14;
+  kMsgReadIndex = 15;
+  kMsgReadIndexResp = 16;
+  kMsgPreVote = 17;
+  kMsgPreVoteResp = 18;
 }
 
 message Message {
-  optional MessageType type         = 1;
-  optional uint64      to           = 2;
-  optional uint64      from         = 3;
-  optional uint64      term         = 4;
+  MessageType type = 1;
+  uint64 to = 2;
+  uint64 from = 3;
+  uint64 term = 4;
   // log_term is generally used for appending Raft logs to followers.
   // For example:
   // (type = kMsgApp, index = 100, log_term = 5) means leader appends entries
@@ -62,64 +62,64 @@ message Message {
   // (type = kMsgAppResp, reject = true, index = 100, log_term = 5) means
   // follower rejects some entries from its leader as it already has an entry
   // with term 5 at index 100.
-  optional uint64      log_term     = 5;
-  optional uint64      index        = 6;
-  repeated Entry       entries      = 7;
-  optional uint64      commit       = 8;
+  uint64 log_term     = 5;
+  uint64 index = 6;
+  repeated Entry entries = 7;
+  uint64 commit = 8;
   // snapshot is non-null and non-empty for kMsgSnap messages and null for all
   // other message types. However, peer nodes running older binary versions may
   // send a non-null, empty value for the snapshot field of non-kMsgSnap
   // messages. Code should be prepared to handle such messages.
-  optional Snapshot    snapshot     = 9;
-  optional bool        reject       = 10;
-  optional uint64      reject_hint  = 11;
-  optional bytes       context      = 12;
+  Snapshot snapshot = 9;
+  bool reject = 10;
+  uint64 reject_hint = 11;
+  bytes context = 12;
 }
 
 message HardState {
-  required uint64 term    = 1;
-  required uint64 vote    = 2;
-  required uint64 commit  = 3;
+  uint64 term = 1;
+  uint64 vote = 2;
+  uint64 commit = 3;
 }
 
 message ConfState {
   // The voters in the incoming config. (If the configuration is not joint,
   // then the outgoing config is empty).
-  repeated uint64 voters          = 1;
+  repeated uint64 voters = 1;
   // The learners in the incoming config.
-  repeated uint64 learners        = 2;
+  repeated uint64 learners = 2;
   // The voters in the outgoing config.
   repeated uint64 voters_outgoing = 3;
   // The nodes that will become learners when the outgoing config is removed.
   // These nodes are necessarily currently in nodes_joint (or they would have
   // been added to the incoming config right away).
-  repeated uint64 learners_next   = 4;
+  repeated uint64 learners_next = 4;
   // If set, the config is joint and Raft will automatically transition into
   // the final config (i.e. remove the outgoing config) when this is safe.
-  optional bool   auto_leave      = 5;
+  bool auto_leave = 5;
 }
 
 enum ConfChangeType {
-  kConfChangeAddNode          = 0;
-  kConfChangeRemoveNode       = 1;
-  kConfChangeUpdateNode       = 2;
-  kConfChangeAddLearnerNode   = 3;
+  kConfChangeAddNode = 0;
+  kConfChangeRemoveNode = 1;
+  kConfChangeUpdateNode = 2;
+  kConfChangeAddLearnerNode = 3;
 }
 
 message ConfChange {
-  optional ConfChangeType type    = 2;
-  optional uint64         node_id = 3;
-  optional bytes          context = 4;
+  ConfChangeType type = 2;
+  uint64 node_id = 3;
+  bytes context = 4;
 
   // NB: this is used only by etcd to thread through a unique identifier.
   // Ideally it should really use the Context instead. No counterpart to
   // this field exists in ConfChangeV2.
-  optional uint64         id      = 1;
+  uint64 id = 1;
 }
 
 // ConfChangeSingle is an individual configuration change operation. Multiple
 // such operations can be carried out atomically via a ConfChangeV2.
 message ConfChangeSingle {
-  optional ConfChangeType type    = 1;
-  optional uint64         node_id = 2;
+  ConfChangeType type = 1;
+  uint64 node_id = 2;
 }

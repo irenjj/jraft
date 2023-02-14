@@ -1,4 +1,4 @@
-syntax = "proto2";
+syntax = "proto3";
 package jraft;
 
 enum ErrNum {
@@ -9,36 +9,34 @@ enum ErrNum {
    */
   // kErrCompacted is returned by Storage.Entries()/Compact() when
   // a requested index is unavailable because it predates the last snapshot.
-  kErrCompacted                       = 1;
+  kErrCompacted = 1;
   // kErrSnapOutOfData is returned by Storage.CreateSnapshot
   // when a requested index is older than the existing snapshot.
-  kErrSnapOutOfData                   = 2;
+  kErrSnapOutOfData = 2;
   // kErrUnavailable is returned by Storage interface when the
   // requested log entries are unavailable.
-  kErrUnavailable                     = 3;
+  kErrUnavailable = 3;
   // kErrSnapshotTemporarilyUnavailable is returned by the
   // Storage interface when the requested snapshot is temporarily unavailable.
-  kErrSnapshotTemporarilyUnavailable  = 4;
+  kErrSnapshotTemporarilyUnavailable = 4;
   // kErrSerializeFail is returned by the Node interface when
   // the requested data Serialize failed.
-  kErrSerializeFail                   = 5;
+  kErrSerializeFail = 5;
 
   /**
    * used for Raft
    */
   // kErrProposalDropped is returned when the proposal is ignored by some cases
   // so that the proposer can be notified and fail fast.
-  kErrProposalDropped = 7;
+  kErrProposalDropped = 6;
 
   /**
    * used for RawNode
    */
   // kErrStepLocalMsg is returned when try to step a local raft message.
-  kErrStepLocalMsg      = 8;
+  kErrStepLocalMsg = 7;
   // kErrStepPeerNotFound is returned when try to step a response message
   // but there is no peer found in raft.tracker() for that node.
-  kErrStepPeerNotFound  = 9;
+  kErrStepPeerNotFound  = 8;
 
-  // number of ErrCode
-  kErrNumErrCode                      = 6;
 };
