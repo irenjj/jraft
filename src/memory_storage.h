@@ -37,7 +37,7 @@ class MemoryStorage : public Storage {
   ErrNum GetSnapshot(SnapshotPtr& snapshot) override;
   ErrNum CreateSnapshot(uint64_t i, ConfState* cs, const std::string& data,
                         SnapshotPtr* snapshot) override;
-  ErrNum ApplySnapshot(const SnapshotPtr& snapshot) override;
+  ErrNum ApplySnapshot(const Snapshot& snapshot) override;
 
   ErrNum Compact(uint64_t compact_index) override;
   ErrNum Append(const std::vector<EntryPtr>& entries) override;

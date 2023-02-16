@@ -65,7 +65,7 @@ class Storage : Noncopyable {
   virtual ErrNum CreateSnapshot(uint64_t i, ConfState* cs,
                                 const std::string& data,
                                 SnapshotPtr* snapshot) = 0;
-  virtual ErrNum ApplySnapshot(const SnapshotPtr& snapshot) = 0;
+  virtual ErrNum ApplySnapshot(const Snapshot& snapshot) = 0;
 
   virtual ErrNum Compact(uint64_t compact_index) = 0;
   virtual ErrNum Append(const std::vector<EntryPtr>& entries) = 0;

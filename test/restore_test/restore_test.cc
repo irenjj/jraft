@@ -195,7 +195,7 @@ TEST(RestoreTest, TestLearnerReceiveSnapshot) {
   SoftState empty_ss;
   HardState empty_hs;
   auto ready = std::make_shared<Ready>(n1, empty_ss, empty_hs);
-  EXPECT_EQ(store1->ApplySnapshot(ready->mutable_snapshot()), kOk);
+  EXPECT_EQ(store1->ApplySnapshot(*ready->mutable_snapshot()), kOk);
   n1->Advance(ready);
 
   // Force set n1 applied index.

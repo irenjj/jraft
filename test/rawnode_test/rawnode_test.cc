@@ -34,7 +34,7 @@ TEST(RawNodeTest, TestRawNodeStep) {
     s->Append(ents);
     ConfState cs;
     cs.add_voters(1);
-    EXPECT_EQ(s->ApplySnapshot(NewSnap(1, 1, "", &cs)), kOk) << "i: " << i;
+    EXPECT_EQ(s->ApplySnapshot(*NewSnap(1, 1, "", &cs)), kOk) << "i: " << i;
     // Append an empty entry to make sure the non-local message (like vote
     // requests) are ignored and don't trigger assertions.
     RawNode raw_node(ConsConfig(1, 10, 1, s));
@@ -188,7 +188,7 @@ TEST(RawNodeTest, TestRawNodeRestartFromSnapshot) {
 
   auto s = NewMSWithPeers({});
   s->set_hard_state(hs);
-  s->ApplySnapshot(snap);
+  s->ApplySnapshot(*snap);
   s->Append(entries);
   RawNode raw_node(ConsConfig(1, 10, 1, s));
   auto rd = raw_node.GetReady();

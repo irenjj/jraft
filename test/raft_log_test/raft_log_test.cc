@@ -452,7 +452,7 @@ TEST(LogTest, TestHasNextEnts) {
   int i = 0;
   for (const auto& tt : tests) {
     MemoryStoragePtr ms = std::make_shared<MemoryStorage>();
-    ms->ApplySnapshot(snap);
+    ms->ApplySnapshot(*snap);
     RaftLog raft_log(ms);
     raft_log.Append(ents);
     raft_log.MaybeCommit(5, 1);
@@ -497,7 +497,7 @@ TEST(LogTest, TestNextEnts) {
   int i = 0;
   for (const auto& tt : tests) {
     MemoryStoragePtr ms = std::make_shared<MemoryStorage>();
-    ms->ApplySnapshot(snap);
+    ms->ApplySnapshot(*snap);
     RaftLog* raft_log = new RaftLog(ms);
     raft_log->Append(ents);
     raft_log->MaybeCommit(5, 1);
@@ -699,7 +699,7 @@ TEST(LogTest, TestStableToWithSnap) {
     MemoryStoragePtr ms = std::make_shared<MemoryStorage>();
 
     auto snap = NewSnap(snapi, snapt);
-    ms->ApplySnapshot(snap);
+    ms->ApplySnapshot(*snap);
     auto raft_log = new RaftLog(ms);
     raft_log->Append(tt.new_ents);
     raft_log->StableTo(tt.stablei, tt.stablet);
@@ -763,7 +763,7 @@ TEST(LogTest, TestLogRestore) {
   auto snap = NewSnap(index, term);
   MemoryStoragePtr ms = std::make_shared<MemoryStorage>();
 
-  ms->ApplySnapshot(snap);
+  ms->ApplySnapshot(*snap);
   auto raft_log = new RaftLog(ms);
 
   std::vector<EntryPtr> all_ents;
@@ -786,7 +786,7 @@ TEST(LogTest, TestIsOutOfBounds) {
   MemoryStoragePtr ms = std::make_shared<MemoryStorage>();
 
   auto snap = NewSnap(offset);
-  ms->ApplySnapshot(snap);
+  ms->ApplySnapshot(*snap);
   auto l = new RaftLog(ms);
   for (uint64_t i = 1; i <= num; i++) {
     l->Append({NewEnt(i + offset)});
@@ -860,7 +860,7 @@ TEST(LogTest, TestTerm) {
   MemoryStoragePtr ms = std::make_shared<MemoryStorage>();
 
   auto snap = NewSnap(offset, 1);
-  ms->ApplySnapshot(snap);
+  ms->ApplySnapshot(*snap);
   auto l = new RaftLog(ms);
   for (i = 1; i < num; i++) {
     l->Append({NewEnt(offset + i, i)});
@@ -913,7 +913,7 @@ TEST(LogTest, TestTermWithUnstableSnapshot) {
   MemoryStoragePtr ms = std::make_shared<MemoryStorage>();
 
   auto snap = NewSnap(storagesnapi, 1);
-  ms->ApplySnapshot(snap);
+  ms->ApplySnapshot(*snap);
   auto l = new RaftLog(ms);
   auto unstable_snap = NewSnap(unstablesnapi, 1);
   l->Restore(unstable_snap);
@@ -969,7 +969,7 @@ TEST(LogTest, TestSlice) {
   MemoryStoragePtr ms = std::make_shared<MemoryStorage>();
 
   auto snap = NewSnap(offset);
-  ms->ApplySnapshot(snap);
+  ms->ApplySnapshot(*snap);
   for (i = 1; i < num / 2; i++) {
     ms->Append({NewEnt(offset + i, offset + i)});
   }

@@ -1444,7 +1444,7 @@ TEST(ElectionTest, TestBcastBeat) {
   cs.add_voters(3);
   auto s = NewSnap(offset, 1, "", &cs);
   auto storage = NewMSWithEnts({});
-  storage->ApplySnapshot(s);
+  storage->ApplySnapshot(*s);
   auto sm = NewTestRaft(1, 10, 1, storage);
   sm->set_term(1);
 

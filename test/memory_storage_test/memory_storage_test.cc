@@ -267,12 +267,12 @@ TEST(MemoryStorageTest, TestStorageApplySnapshot) {
 
   {
     auto snap = tests[0];
-    EXPECT_EQ(kOk, s.ApplySnapshot(snap));
+    EXPECT_EQ(kOk, s.ApplySnapshot(*snap));
   }
 
   {
     auto snap = tests[1];
-    EXPECT_EQ(kErrSnapOutOfData, s.ApplySnapshot(snap));
+    EXPECT_EQ(kErrSnapOutOfData, s.ApplySnapshot(*snap));
   }
 }
 

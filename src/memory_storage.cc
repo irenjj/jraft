@@ -140,17 +140,17 @@ ErrNum MemoryStorage::CreateSnapshot(uint64_t i, ConfState* cs,
 
 // Overwrites the content of Storage object with the given snapshot. If the
 // snapshot is stale, ignore it.
-ErrNum MemoryStorage::ApplySnapshot(const SnapshotPtr& snapshot) {
+ErrNum MemoryStorage::ApplySnapshot(const Snapshot& snapshot) {
   std::lock_guard<std::mutex> lock_guard(mutex_);
 
   // handle check for old snapshot being applied
   uint64_t ms_index = snapshot_->metadata().index();
-  uint64_t snap_index = snapshot->metadata().index();
+  uint64_t snap_index = snapshot.metadata().index();
   if (ms_index >= snap_index) {
     return kErrSnapOutOfData;
   }
 
-  snapshot_ = snapshot;
+  *snapshot_ = snapshot;
   entries_.clear();
   entries_.push_back(
       NewEnt(snapshot_->metadata().index(), snapshot_->metadata().term()));
