@@ -26,7 +26,8 @@ Ready::Ready()
       must_sync_(false) {}
 
 Ready::Ready(const RaftPtr& r, const SoftState& prev_cs,
-             const HardState& prev_hs) {
+             const HardState& prev_hs)
+    : messages_(r->msgs()) {
   entries_.clear();
   r->raft_log()->UnstableEntries(&entries_);
   committed_entries_.clear();
